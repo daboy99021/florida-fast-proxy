@@ -18,8 +18,44 @@ const cards = [
   { title: "Clean tabs", detail: "Desktop-style browsing layout", tone: "bg-secondary" },
 ];
 
+const createStartPage = (term = "") => `
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      * { box-sizing: border-box; }
+      body { margin: 0; min-height: 100vh; font-family: Inter, ui-sans-serif, system-ui, sans-serif; color: #e8eefc; background: radial-gradient(circle at top left, #244a7a, transparent 34%), linear-gradient(135deg, #111827, #172033 55%, #0f172a); }
+      main { min-height: 100vh; display: grid; place-items: center; padding: 32px; }
+      section { width: min(760px, 100%); }
+      h1 { margin: 0; font-size: clamp(34px, 7vw, 72px); line-height: .95; letter-spacing: 0; }
+      p { color: #aebbd3; font-size: 16px; line-height: 1.7; }
+      .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 28px; }
+      a { display: block; border: 1px solid rgba(255,255,255,.16); border-radius: 12px; padding: 16px; color: #f8fbff; text-decoration: none; background: rgba(255,255,255,.08); }
+      a:hover { background: rgba(255,255,255,.14); }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section>
+        <h1>${term ? `Search: ${term}` : "New Tab"}</h1>
+        <p>${term ? "Open search results in a new tab, or try a site that allows embedding." : "Type a URL or search above. Some websites block loading inside iframes, but this page itself will always render here."}</p>
+        <div class="grid">
+          <a target="_blank" rel="noreferrer" href="https://www.google.com/search?q=${encodeURIComponent(term || "github pages")}">Google Search</a>
+          <a target="_blank" rel="noreferrer" href="https://duckduckgo.com/?q=${encodeURIComponent(term || "github pages")}">DuckDuckGo</a>
+          <a target="_blank" rel="noreferrer" href="https://github.com">GitHub</a>
+          <a target="_blank" rel="noreferrer" href="https://news.ycombinator.com">News</a>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>`;
+
 function Index() {
   const [address, setAddress] = useState("github-pages://desktop-browser");
+  const [frameUrl, setFrameUrl] = useState("");
+  const [frameHtml, setFrameHtml] = useState(createStartPage());
 
   const openAddress = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -29,13 +65,10 @@ function Index() {
 
     const hasProtocol = /^[a-zA-Z][a-zA-Z\d+.-]*:\/\//.test(value);
     const looksLikeDomain = /^[^\s]+\.[^\s]{2,}/.test(value);
-    const target = hasProtocol
-      ? value
-      : looksLikeDomain
-        ? `https://${value}`
-        : `https://www.google.com/search?q=${encodeURIComponent(value)}`;
+    const target = hasProtocol ? value : looksLikeDomain ? `https://${value}` : "";
 
-    window.open(target, "_blank", "noopener,noreferrer");
+    setFrameUrl(target);
+    setFrameHtml(target ? "" : createStartPage(value));
   };
 
   return (
@@ -119,6 +152,17 @@ function Index() {
                   A polished static interface that feels like opening a clean modern browser on your
                   computer.
                 </p>
+              </div>
+
+              <div className="overflow-hidden rounded-xl border border-border bg-browser-display shadow-panel">
+                <iframe
+                  key={frameUrl || frameHtml}
+                  title="Browser viewport"
+                  src={frameUrl || undefined}
+                  srcDoc={frameUrl ? undefined : frameHtml}
+                  className="h-[360px] w-full bg-background"
+                  sandbox="allow-forms allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
+                />
               </div>
 
               <div className="grid gap-4 md:grid-cols-3">
