@@ -93,7 +93,8 @@ function Index() {
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
-      if (event.data?.type !== "load-in-browser-window" || typeof event.data.url !== "string") return;
+      if (event.data?.type !== "load-in-browser-window" || typeof event.data.url !== "string")
+        return;
       loadInFrame(event.data.url);
     };
 
