@@ -1,0 +1,121 @@
+import { createFileRoute } from "@tanstack/react-router";
+
+export const Route = createFileRoute("/")({
+  component: Index,
+});
+
+const quickLinks = [
+  { label: "Docs", url: "https://docs.github.com" },
+  { label: "Design", url: "https://www.figma.com" },
+  { label: "Code", url: "https://github.com" },
+  { label: "News", url: "https://news.ycombinator.com" },
+];
+
+const cards = [
+  { title: "Project repo", detail: "Ready for GitHub Pages export", tone: "bg-primary/10" },
+  { title: "Fast shell", detail: "Static UI with responsive controls", tone: "bg-accent/20" },
+  { title: "Clean tabs", detail: "Desktop-style browsing layout", tone: "bg-secondary" },
+];
+
+function Index() {
+  return (
+    <main className="relative min-h-screen overflow-hidden bg-ambient px-4 py-6 text-foreground sm:px-6 lg:px-10">
+      <div className="ambient-shift pointer-events-none absolute inset-[-8%] bg-ambient opacity-80" />
+      <section className="relative mx-auto flex min-h-[calc(100vh-3rem)] w-full max-w-7xl items-center justify-center">
+        <div className="float-in w-full overflow-hidden rounded-2xl border border-border browser-glass">
+          <header className="border-b border-border bg-browser-chrome/80">
+            <div className="flex items-center gap-3 px-4 py-3">
+              <div className="flex items-center gap-2" aria-hidden="true">
+                <span className="h-3 w-3 rounded-full bg-destructive" />
+                <span className="h-3 w-3 rounded-full bg-chart-5" />
+                <span className="h-3 w-3 rounded-full bg-success" />
+              </div>
+              <div className="hidden min-w-0 items-center gap-2 rounded-t-lg bg-browser-tab px-4 py-2 text-sm font-medium text-muted-foreground shadow-panel sm:flex">
+                <span className="h-2 w-2 rounded-full bg-success" />
+                New Tab
+              </div>
+              <div className="ml-auto flex items-center gap-2 text-browser-control-foreground">
+                <button className="grid h-8 w-8 place-items-center rounded-md bg-browser-control transition hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring" aria-label="Back">
+                  ←
+                </button>
+                <button className="grid h-8 w-8 place-items-center rounded-md bg-browser-control transition hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring" aria-label="Refresh">
+                  ↻
+                </button>
+              </div>
+            </div>
+            <div className="flex flex-col gap-3 px-4 pb-4 sm:flex-row">
+              <label className="sr-only" htmlFor="address">
+                Address bar
+              </label>
+              <div className="flex min-h-12 flex-1 items-center gap-3 rounded-lg border border-border bg-browser-display px-4 shadow-panel transition focus-within:ring-2 focus-within:ring-ring">
+                <span className="text-success">●</span>
+                <input
+                  id="address"
+                  className="w-full bg-transparent text-sm font-medium text-foreground outline-none placeholder:text-muted-foreground"
+                  placeholder="Search or type a web address"
+                  defaultValue="github-pages://desktop-browser"
+                />
+              </div>
+              <button className="rounded-lg bg-primary-action px-5 py-3 text-sm font-bold text-primary-foreground shadow-panel transition hover:-translate-y-0.5 hover:shadow-browser focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring">
+                Open
+              </button>
+            </div>
+          </header>
+
+          <div className="grid min-h-[620px] bg-background/72 lg:grid-cols-[260px_1fr]">
+            <aside className="border-b border-border bg-surface p-4 lg:border-b-0 lg:border-r">
+              <p className="text-xs font-bold uppercase text-muted-foreground">Favorites</p>
+              <nav className="mt-4 grid gap-2" aria-label="Favorite links">
+                {quickLinks.map((link) => (
+                  <a
+                    key={link.label}
+                    href={link.url}
+                    className="flex items-center justify-between rounded-lg px-3 py-3 text-sm font-semibold text-surface-foreground transition hover:bg-accent/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring"
+                  >
+                    {link.label}
+                    <span className="text-muted-foreground">↗</span>
+                  </a>
+                ))}
+              </nav>
+            </aside>
+
+            <section className="flex flex-col justify-between gap-8 p-5 sm:p-8 lg:p-10">
+              <div>
+                <p className="text-sm font-bold text-primary">Desktop workspace</p>
+                <h1 className="mt-3 max-w-3xl text-4xl font-black leading-tight text-foreground sm:text-6xl">
+                  Browse-style start page for your GitHub site.
+                </h1>
+                <p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg">
+                  A polished static interface that feels like opening a clean modern browser on your computer.
+                </p>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-3">
+                {cards.map((card) => (
+                  <article
+                    key={card.title}
+                    className="rounded-xl border border-border bg-card p-5 shadow-panel transition hover:-translate-y-1 hover:shadow-browser"
+                  >
+                    <div className={`mb-6 h-20 rounded-lg ${card.tone}`} />
+                    <h2 className="text-lg font-black text-card-foreground">{card.title}</h2>
+                    <p className="mt-2 text-sm leading-6 text-muted-foreground">{card.detail}</p>
+                  </article>
+                ))}
+              </div>
+
+              <div className="rounded-xl border border-border bg-surface p-4">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <p className="font-bold text-surface-foreground">Static export friendly</p>
+                    <p className="text-sm text-muted-foreground">Split into normal React, CSS tokens, and reusable layout structure.</p>
+                  </div>
+                  <span className="rounded-full bg-success px-3 py-1 text-xs font-black text-success-foreground">Online</span>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </section>
+    </main>
+  );
+}
