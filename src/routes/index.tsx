@@ -85,15 +85,29 @@ function Index() {
   const [frameUrl, setFrameUrl] = useState("");
   const [frameHtml, setFrameHtml] = useState(createStartPage());
 
+  const loadInFrame = (target: string) => {
+    setAddress(target);
+    setFrameUrl(target);
+    setFrameHtml("");
+  };
+
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data?.type !== "load-in-browser-window" || typeof event.data.url !== "string") return;
+      loadInFrame(event.data.url);
+    };
+
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, []);
+
   const openAddress = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const value = address.trim();
     if (!value) return;
 
-    const hasProtocol = /^[a-zA-Z][a-zA-Z\d+.-]*:\/\//.test(value);
-    const looksLikeDomain = /^[^\s]+\.[^\s]{2,}/.test(value);
-    const target = hasProtocol ? value : looksLikeDomain ? `https://${value}` : "";
+    const target = normalizeAddress(value);
 
     setFrameUrl(target);
     setFrameHtml(target ? "" : createStartPage(value));
