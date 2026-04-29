@@ -172,14 +172,15 @@ function Index() {
               <p className="text-xs font-bold uppercase text-muted-foreground">Favorites</p>
               <nav className="mt-4 grid gap-2" aria-label="Favorite links">
                 {quickLinks.map((link) => (
-                  <a
+                  <button
                     key={link.label}
-                    href={link.url}
-                    className="flex items-center justify-between rounded-lg px-3 py-3 text-sm font-semibold text-surface-foreground transition hover:bg-accent/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring"
+                    type="button"
+                    onClick={() => loadInFrame(link.url)}
+                    className="flex items-center justify-between rounded-lg px-3 py-3 text-left text-sm font-semibold text-surface-foreground transition hover:bg-accent/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring"
                   >
                     {link.label}
-                    <span className="text-muted-foreground">↗</span>
-                  </a>
+                    <span className="text-muted-foreground">→</span>
+                  </button>
                 ))}
               </nav>
             </aside>
