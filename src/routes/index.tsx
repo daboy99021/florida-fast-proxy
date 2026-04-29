@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -18,6 +19,25 @@ const cards = [
 ];
 
 function Index() {
+  const [address, setAddress] = useState("github-pages://desktop-browser");
+
+  const openAddress = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const value = address.trim();
+    if (!value) return;
+
+    const hasProtocol = /^[a-zA-Z][a-zA-Z\d+.-]*:\/\//.test(value);
+    const looksLikeDomain = /^[^\s]+\.[^\s]{2,}/.test(value);
+    const target = hasProtocol
+      ? value
+      : looksLikeDomain
+        ? `https://${value}`
+        : `https://www.google.com/search?q=${encodeURIComponent(value)}`;
+
+    window.open(target, "_blank", "noopener,noreferrer");
+  };
+
   return (
     <main className="relative min-h-screen overflow-hidden bg-ambient px-4 py-6 text-foreground sm:px-6 lg:px-10">
       <div className="ambient-shift pointer-events-none absolute inset-[-8%] bg-ambient opacity-80" />
@@ -35,15 +55,21 @@ function Index() {
                 New Tab
               </div>
               <div className="ml-auto flex items-center gap-2 text-browser-control-foreground">
-                <button className="grid h-8 w-8 place-items-center rounded-md bg-browser-control transition hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring" aria-label="Back">
+                <button
+                  className="grid h-8 w-8 place-items-center rounded-md bg-browser-control transition hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring"
+                  aria-label="Back"
+                >
                   ←
                 </button>
-                <button className="grid h-8 w-8 place-items-center rounded-md bg-browser-control transition hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring" aria-label="Refresh">
+                <button
+                  className="grid h-8 w-8 place-items-center rounded-md bg-browser-control transition hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring"
+                  aria-label="Refresh"
+                >
                   ↻
                 </button>
               </div>
             </div>
-            <div className="flex flex-col gap-3 px-4 pb-4 sm:flex-row">
+            <form className="flex flex-col gap-3 px-4 pb-4 sm:flex-row" onSubmit={openAddress}>
               <label className="sr-only" htmlFor="address">
                 Address bar
               </label>
@@ -53,13 +79,17 @@ function Index() {
                   id="address"
                   className="w-full bg-transparent text-sm font-medium text-foreground outline-none placeholder:text-muted-foreground"
                   placeholder="Search or type a web address"
-                  defaultValue="github-pages://desktop-browser"
+                  value={address}
+                  onChange={(event) => setAddress(event.target.value)}
                 />
               </div>
-              <button className="rounded-lg bg-primary-action px-5 py-3 text-sm font-bold text-primary-foreground shadow-panel transition hover:-translate-y-0.5 hover:shadow-browser focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring">
+              <button
+                type="submit"
+                className="rounded-lg bg-primary-action px-5 py-3 text-sm font-bold text-primary-foreground shadow-panel transition hover:-translate-y-0.5 hover:shadow-browser focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring"
+              >
                 Open
               </button>
-            </div>
+            </form>
           </header>
 
           <div className="grid min-h-[620px] bg-background/72 lg:grid-cols-[260px_1fr]">
@@ -86,7 +116,8 @@ function Index() {
                   Browse-style start page for your GitHub site.
                 </h1>
                 <p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg">
-                  A polished static interface that feels like opening a clean modern browser on your computer.
+                  A polished static interface that feels like opening a clean modern browser on your
+                  computer.
                 </p>
               </div>
 
@@ -107,9 +138,13 @@ function Index() {
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <div>
                     <p className="font-bold text-surface-foreground">Static export friendly</p>
-                    <p className="text-sm text-muted-foreground">Split into normal React, CSS tokens, and reusable layout structure.</p>
+                    <p className="text-sm text-muted-foreground">
+                      Split into normal React, CSS tokens, and reusable layout structure.
+                    </p>
                   </div>
-                  <span className="rounded-full bg-success px-3 py-1 text-xs font-black text-success-foreground">Online</span>
+                  <span className="rounded-full bg-success px-3 py-1 text-xs font-black text-success-foreground">
+                    Online
+                  </span>
                 </div>
               </div>
             </section>
