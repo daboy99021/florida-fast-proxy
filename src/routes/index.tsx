@@ -1,11 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/")({
   component: Index,
 });
 
 const quickLinks = [
+  { label: "YouTube", url: "https://www.youtube.com" },
   { label: "Docs", url: "https://docs.github.com" },
   { label: "Design", url: "https://www.figma.com" },
   { label: "Code", url: "https://github.com" },
@@ -18,7 +19,24 @@ const cards = [
   { title: "Clean tabs", detail: "Desktop-style browsing layout", tone: "bg-secondary" },
 ];
 
-const createStartPage = (term = "") => `
+const escapeHtml = (value: string) =>
+  value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+
+const normalizeAddress = (value: string) => {
+  const trimmed = value.trim();
+  if (!trimmed) return "";
+
+  const hasProtocol = /^[a-zA-Z][a-zA-Z\d+.-]*:\/\//.test(trimmed);
+  const looksLikeDomain = /^[^\s]+\.[^\s]{2,}/.test(trimmed);
+
+  return hasProtocol ? trimmed : looksLikeDomain ? `https://${trimmed}` : "";
+};
+
+const createStartPage = (term = "") => {
+  const safeTerm = escapeHtml(term);
+  const query = encodeURIComponent(term || "github pages");
+
+  return `
 <!doctype html>
 <html lang="en">
   <head>
@@ -39,18 +57,28 @@ const createStartPage = (term = "") => `
   <body>
     <main>
       <section>
-        <h1>${term ? `Search: ${term}` : "New Tab"}</h1>
-        <p>${term ? "Open search results in a new tab, or try a site that allows embedding." : "Type a URL or search above. Some websites block loading inside iframes, but this page itself will always render here."}</p>
+        <h1>${term ? `Search: ${safeTerm}` : "New Tab"}</h1>
+        <p>${term ? "Choose a destination below. If a site blocks embedded browsing, this window will keep showing the start page instead of opening a new tab." : "Type a URL or search above. Sites that allow embedded browsing will load in this window."}</p>
         <div class="grid">
-          <a target="_blank" rel="noreferrer" href="https://www.google.com/search?q=${encodeURIComponent(term || "github pages")}">Google Search</a>
-          <a target="_blank" rel="noreferrer" href="https://duckduckgo.com/?q=${encodeURIComponent(term || "github pages")}">DuckDuckGo</a>
-          <a target="_blank" rel="noreferrer" href="https://github.com">GitHub</a>
-          <a target="_blank" rel="noreferrer" href="https://news.ycombinator.com">News</a>
+          <a href="https://www.google.com/search?q=${query}">Google Search</a>
+          <a href="https://duckduckgo.com/?q=${query}">DuckDuckGo</a>
+          <a href="https://www.youtube.com">YouTube</a>
+          <a href="https://github.com">GitHub</a>
+          <a href="https://news.ycombinator.com">News</a>
         </div>
       </section>
     </main>
+    <script>
+      document.addEventListener('click', function(event) {
+        const link = event.target.closest('a[href]');
+        if (!link) return;
+        event.preventDefault();
+        window.parent.postMessage({ type: 'load-in-browser-window', url: link.href }, '*');
+      });
+    </script>
   </body>
 </html>`;
+};
 
 function Index() {
   const [address, setAddress] = useState("github-pages://desktop-browser");
